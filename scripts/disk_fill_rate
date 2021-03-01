@@ -21,9 +21,7 @@ EOF
 statefile=/var/run/dfr-state
 offsetfile=/var/run/dfr-offset
 date=$(date +%s)
-df="$(
-  df -P -l -x none -x unknown -x iso9660 -x squashfs -x udf -x romfs -x ramfs -x debugfs -x simfs -x tmpfs -x devtmpfs
-)"
+df="$(df -P -l -x none -x unknown -x iso9660 -x squashfs -x udf -x romfs -x ramfs -x debugfs -x simfs -x tmpfs -x devtmpfs -x overlay)"
 
 # Start with an initial yaml header
 echo '---' >> $statefile
