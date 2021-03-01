@@ -18,8 +18,8 @@ Filesystem    Type 1024-blocks      Used Available Capacity Mounted on
 EOF
 
 # Store timestamp from time of df.
-statefile=/var/run/$(basename $0)-statefile
-offsetfile=/var/run/$(basename $0)-offset
+statefile=/var/run/dfr-state
+offsetfile=/var/run/dfr-offset
 date=$(date +%s)
 df="$(
   df -P -l -x none -x unknown -x iso9660 -x squashfs -x udf -x romfs -x ramfs -x debugfs -x simfs -x tmpfs -x devtmpfs

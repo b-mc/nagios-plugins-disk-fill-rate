@@ -7,6 +7,13 @@ debug()
     printf "%s\n" "$@" >> /tmp/dfr-debug.txt
 }
 
+crit_quit()
+{
+    printf "%s\n" "$@"
+    debug "$@"
+    exit 2
+}
+
 debug "===========================================
 Run on $(date +"%Y-%m-%d %H:%M:%S")
 ==========================================="
@@ -18,10 +25,19 @@ critical_seconds=$((3600 * 16))
 critical=0
 warning=0
 message="fill rate: "
+offset_file="/var/run/dfr-offset"
+state_file="/var/run/dfr-state"
+
+if ! [ -r $offset_file ] || ! [ -r $state_file ]; then
+  crit_quit "One or more required input files doesn't exist!"
+fi
 
 # Store the tail for multiple passes with the same data set (in case the files change under our feet)
-data="$(tail -n +$(</var/run/disk_fill_rate-offset) /var/run/disk_fill_rate-statefile | grep ^[0-9])"
+data="$(tail -n +$(<$offset_file) $state_file | grep '^[0-9]')"
 
+if [ -z "$data" ]; then
+  crit_quit "Couldn't import the input data!"
+fi
 declare -a mountpoints
 declare -a timestamps
 declare -A availability
@@ -94,7 +110,4 @@ fi
 if [ ! -z "$messages" ] ; then
   exit 0
 fi
-# no messages, means no disks?
-exit 3
-
-
+crit_quit "Unknown error"
