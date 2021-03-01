@@ -101,13 +101,13 @@ do
 done
 
 echo "${criticalmessages}${warningmessages}${messages}"
-if [ ! -z "$criticalmessages" ] ; then
+if [ -n "$criticalmessages" ] ; then
   exit 2
 fi
-if [ ! -z "$warningmessages" ] ; then
+if [ -n "$warningmessages" ] ; then
   exit 1
 fi
-if [ ! -z "$messages" ] ; then
+if [ -n "$messages" ] ; then
   exit 0
 fi
 crit_quit "Unknown error"
