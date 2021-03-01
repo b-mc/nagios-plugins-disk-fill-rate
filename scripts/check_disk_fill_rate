@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# set -x
+
+debug()
+{
+    printf "%s\n" "$@" >> /tmp/dfr-debug.txt
+}
+
+debug "===========================================
+Run on $(date +"%Y-%m-%d %H:%M:%S")
+==========================================="
+
 # TODO get these from options
 warning_seconds=$((3600 * 48))
 critical_seconds=$((3600 * 16))
@@ -29,8 +40,9 @@ done <<< "$data"
 
 for mountpoint in "${mountpoints[@]}"
 do
+  debug "Processing $mountpoint"
+
   lowestbyterate=
-  #echo "Mountpoint $mountpoint"
   oldtimestamp=${timestamps[0]}
   for timestamp in "${timestamps[@]:1}"
   do
