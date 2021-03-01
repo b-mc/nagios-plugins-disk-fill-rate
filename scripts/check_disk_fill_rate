@@ -42,7 +42,7 @@ declare -a mountpoints
 declare -a timestamps
 declare -A availability
 while read timestamp device mountpoint available ; do
-  [[ ${mountpoints[*]} =~ "$mountpoint " || $mountpoint =~ ^/run/runc/" ]] || mountpoints[${#mountpoints[*]}]=$mountpoint
+  [[ ${mountpoints[*]} =~ "$mountpoint " || $mountpoint =~ ^/run/runc/ ]] || mountpoints[${#mountpoints[*]}]=$mountpoint
   [[ ${timestamps[*]} =~ $timestamp ]] || timestamps[${#timestamps[*]}]=$timestamp
   availability["$mountpoint:$timestamp"]=$available
 done <<< "$data"
