@@ -18,13 +18,13 @@ debug "===========================================
 Run on $(date +"%Y-%m-%d %H:%M:%S")
 ==========================================="
 
-# TODO get these from options
-warning_seconds=$((3600 * 48))
-critical_seconds=$((3600 * 16))
+int="^[0-9]+$"
+if [[ $# -ne 4 ]] || [[ $1 != "-w" ]] || [[ $3 != "-c" ]] || ! [[ $2 =~ $int ]] || ! [[ $4 =~ $int ]]; then
+   crit_quit "Usage: check_disk_fill_rate -w MINUTES -c MINUTES"
+fi
 
-critical=0
-warning=0
-message="fill rate: "
+warning_seconds=$(($2 * 60))
+critical_seconds=$(($4 * 60))
 offset_file="/var/run/dfr-offset"
 state_file="/var/run/dfr-state"
 
@@ -38,6 +38,7 @@ data="$(tail -n +$(<$offset_file) $state_file | grep '^[0-9]')"
 if [ -z "$data" ]; then
   crit_quit "Couldn't import the input data!"
 fi
+
 declare -a mountpoints
 declare -a timestamps
 declare -A availability
@@ -96,4 +97,5 @@ fi
 if [ -n "$messages" ]; then
   exit 0
 fi
+
 crit_quit "Unknown error"
