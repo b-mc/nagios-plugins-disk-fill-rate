@@ -34,14 +34,12 @@ fi
 oldest=$(($(date +%s) - 300)) # cap it at 5 minutes
 # start at the current offset, and read until you see a date older than x minutes.
 while read timestamp line; do
-  offset=$[offset+1]
-  echo offset=$offset  timestamp=$timestamp oldest=$oldest
+  offset=$((offset+1))
   [ -z "$timestamp" ] && continue;          # skip empty
   [ "$timestamp" == "---" ] && continue;    # skip separator
   [[ $timestamp =~ ^[0-9]*$ ]] || continue; # garbage in our statefile
   [ $timestamp -lt $oldest ] && continue;   # timestamp is too old (smaller than the oldest we accept)
-  echo "We've found a timestamp that's newer"
-  offset=$[offset-1]
+  offset=$((offset-1))
   break;
 done <<< "$(tail -n +$offset $statefile)"
 
