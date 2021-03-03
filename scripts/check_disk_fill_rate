@@ -23,6 +23,10 @@ if [[ $# -ne 4 ]] || [[ $1 != "-w" ]] || [[ $3 != "-c" ]] || ! [[ $2 =~ $int ]] 
    crit_quit "Usage: check_disk_fill_rate -w MINUTES -c MINUTES"
 fi
 
+if [[ $4 -ge $2 ]]; then
+  crit_quit "The warning threshold should be greater than the critical threshold"
+fi
+
 warning_seconds=$(($2 * 60))
 critical_seconds=$(($4 * 60))
 offset_file="/var/run/dfr-offset"
