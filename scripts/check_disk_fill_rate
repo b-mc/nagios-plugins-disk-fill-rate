@@ -52,6 +52,10 @@ while read timestamp device mountpoint available; do
   availability["$mountpoint:$timestamp"]=$available
 done <<< "$data"
 
+if [[ -z ${timestamps[*]:1} ]]; then
+  crit_quit "Not enough data to perform the calculation. Please wait one or two runs more"
+fi
+
 for mountpoint in "${mountpoints[@]}"; do
   debug "Processing $mountpoint"
 
