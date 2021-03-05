@@ -33,7 +33,7 @@ offset_file="/var/run/dfr-offset"
 state_file="/var/run/dfr-state"
 
 if ! [ -r $offset_file ] || ! [ -r $state_file ]; then
-  crit_quit "One or more required input files doesn't exist!"
+  crit_quit "One or more required input files don't exist!"
 fi
 
 # Store the tail for multiple passes with the same data set (in case the files change under our feet)
