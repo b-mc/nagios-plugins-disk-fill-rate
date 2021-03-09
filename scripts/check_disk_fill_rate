@@ -37,11 +37,14 @@ if ! [ -r $offset_file ] || ! [ -r $state_file ]; then
 fi
 
 # Store the tail for multiple passes with the same data set (in case the files change under our feet)
-data="$(tail -n +$(<$offset_file) $state_file | grep '^[0-9]')"
+offset=$(<$offset_file)
+data="$(tail -n +$offset $state_file | grep '^[0-9]')"
 
 if [ -z "$data" ]; then
   crit_quit "Couldn't import the input data!"
 fi
+
+debug "Offset is $offset"
 
 declare -a mountpoints
 declare -a timestamps
