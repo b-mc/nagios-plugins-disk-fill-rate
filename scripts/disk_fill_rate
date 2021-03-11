@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Disk Fill Rate - Cron Job
+# Should run every minute:
+# * * * * * root /path/to/disk_fill_rate
+
+# Example output:
+# ---
+# 1612857241 /dev/mapper/vg_sys-lv_root / 7514228
+# 1612857241 /dev/sda1 /boot 293428
+
+# store timestamp from time of df
+statefile=/var/run/dfr-state
+offsetfile=/var/run/dfr-offset
+date=$(date +%s)
+df="$(df -P -l -x none -x unknown -x iso9660 -x squashfs -x udf -x romfs -x ramfs -x debugfs -x simfs -x tmpfs -x devtmpfs -x overlay)"
+
+# separator
+echo '---' >> $statefile
+
+while read fs k u avail c mountpoint; do
+  # ignore the "header" line if it appears
+  [[ $avail =~ ^[0-9]*$ ]] || continue;
+  echo $date $fs $mountpoint $avail >> $statefile 
+done <<< "$df"
+
+# calculate how far into the file the new offset should be
+if [ -r $offsetfile ]; then
+  offset=$(<$offsetfile)
+else
+  offset=0
+fi
+
+oldest=$(($(date +%s) - 300)) # cap it at 5 minutes
+# start at the current offset, and read until you see a date older than x minutes.
+while read timestamp line; do
+  offset=$((offset+1))
+  [ -z "$timestamp" ] && continue;          # skip empty
+  [ "$timestamp" == "---" ] && continue;    # skip separator
+  [[ $timestamp =~ ^[0-9]*$ ]] || continue; # garbage in our statefile
+  [ $timestamp -lt $oldest ] && continue;   # timestamp is too old (smaller than the oldest we accept)
+  offset=$((offset-1))
+  break;
+done <<< "$(tail -n +$offset $statefile)"
+
+echo $offset > $offsetfile
